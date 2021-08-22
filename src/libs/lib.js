@@ -1,11 +1,16 @@
 function ThreadPool(size) {
   this.threads = [];
   this.tasks = [];
+  this.callback = function () {};
   for (let i = 0; i < size; i++) {
     this.threads.push(new Thread(i));
   }
 }
-ThreadPool.prototype.assignTasks = function (callback, task) {
+ThreadPool.prototype.assignCallback = function (callback, task) {
+  this.callback = callback;
+};
+ThreadPool.prototype.executeThread = function (task) {
+  const callback = this.callback;
   if (this.threads.length > 0) {
     for (let ithread = 0; ithread < this.threads.length; ithread++) {
       this.threads[ithread].run(this.tasks, callback);
@@ -37,7 +42,6 @@ function Thread(threadIndex) {
 }
 
 Thread.prototype.run = async function (taskList, callback) {
-  const randomDelay = Math.floor((Math.random() + 0.5) * 100) * 10;
   let current = this.current;
   let processed = this.processed;
   function dealWithTasksPromise(delay) {
@@ -58,6 +62,7 @@ Thread.prototype.run = async function (taskList, callback) {
     });
   }
   while (taskList.length > 0) {
+    const randomDelay = Math.floor((Math.random() + 0.5) * 100) * 10;
     current = await dealWithTasksPromise(randomDelay);
     callback(this.threadIndex, current, "", taskList);
     processed = await addTaskProcessedPromise(current);

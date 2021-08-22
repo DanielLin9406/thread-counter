@@ -1,7 +1,7 @@
-import { List } from "./components/List";
+import { Panel } from "./components/List";
 
 function App() {
-  return <List />;
+  return <Panel />;
 }
 
 export default App;
